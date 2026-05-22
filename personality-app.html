@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personality & Growth — Evidence-Based Assessment</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --accent-dark: #1d4ed8;
+    --pos: #16a34a;
+    --pos-soft: #dcfce7;
+    --neg: #dc2626;
+    --neg-soft: #fee2e2;
+    --warn: #d97706;
+    --warn-soft: #fef3c7;
+    --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 1px 6px rgba(0,0,0,0.06);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px 18px;
+  }
+  header h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+  header p { margin: 0; color: var(--muted); font-size: 13px; }
+  main { max-width: 920px; margin: 0 auto; padding: 32px 24px 80px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card h2 { margin: 0 0 6px; font-size: 18px; font-weight: 600; }
+  .card h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+  .card .lede { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+  button {
+    font: inherit;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background .15s, transform .05s;
+  }
+  button:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-primary:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--accent-soft); }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .row.right { justify-content: flex-end; }
+  .row.between { justify-content: space-between; }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: var(--border);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 8px 0 16px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    transition: width .25s;
+  }
+  .progress-label { font-size: 13px; color: var(--muted); }
+
+  /* Likert */
+  .likert-q {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 6px 0 18px;
+    min-height: 50px;
+  }
+  .likert-scale {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 10px 0 18px;
+  }
+  .likert-scale.four { grid-template-columns: repeat(4, 1fr); }
+  .likert-opt {
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 10px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: border-color .12s, background .12s;
+  }
+  .likert-opt:hover { border-color: var(--accent); }
+  .likert-opt.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    font-weight: 600;
+  }
+  .likert-opt .num { font-size: 17px; font-weight: 600; }
+  .likert-opt .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.2; }
+  .likert-opt.selected .lbl { color: var(--accent-dark); }
+
+  /* Persona radio */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0 6px;
+  }
+  .persona-opt {
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: border-color .12s, background .12s;
+  }
+  .persona-opt:hover { border-color: var(--accent); }
+  .persona-opt.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .persona-opt .ttl { font-weight: 600; font-size: 15px; }
+  .persona-opt .desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* Score bars / bands */
+  .score-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 90px;
+    gap: 12px;
+    align-items: center;
+    margin: 12px 0;
+  }
+  .score-name { font-weight: 500; font-size: 14px; }
+  .score-track {
+    background: var(--border);
+    height: 10px;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+  }
+  .score-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: var(--accent);
+    transition: width .4s;
+  }
+  .score-fill.low { background: var(--warn); }
+  .score-fill.high { background: var(--pos); }
+  .score-band {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+  .score-band.low { background: var(--warn-soft); color: var(--warn); }
+  .score-band.high { background: var(--pos-soft); color: var(--pos); }
+
+  /* Theme card */
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 700px) { .theme-grid { grid-template-columns: 1fr; } }
+  .theme-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    background: var(--card);
+  }
+  .theme-card h4 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .theme-score {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .theme-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    margin: 8px 0 12px;
+    overflow: hidden;
+  }
+  .theme-bar > div { height: 100%; background: var(--accent); transition: width .4s; }
+  .theme-card p { font-size: 13px; margin: 8px 0 0; color: var(--text); }
+
+  /* Growth cards */
+  .growth-card {
+    border-left: 3px solid var(--accent);
+    background: #fafbff;
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin: 10px 0;
+  }
+  .growth-card .gc-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .growth-card .gc-why { font-size: 13px; color: var(--muted); margin-bottom: 6px; font-style: italic; }
+  .growth-card .gc-how { font-size: 13px; }
+  .growth-card .gc-src { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  .strength-pill {
+    display: inline-block;
+    background: var(--pos-soft);
+    color: var(--pos);
+    border-radius: 999px;
+    padding: 4px 12px;
+    margin: 4px 6px 4px 0;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .chart-box { width: 100%; height: 420px; margin: 8px 0; }
+  .small { font-size: 13px; color: var(--muted); }
+  .muted { color: var(--muted); }
+  .citation-list {
+    font-size: 12px;
+    color: var(--muted);
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+  }
+  .citation-list li { margin: 4px 0; }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 18px 0 4px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .nav-tab {
+    background: transparent;
+    border: none;
+    padding: 10px 14px;
+    color: var(--muted);
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+  }
+  .nav-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .stat {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+  .stat .v { font-size: 22px; font-weight: 700; }
+  .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+
+  hr.soft { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+  @media print {
+    nav, .no-print { display: none !important; }
+    .card { box-shadow: none; page-break-inside: avoid; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Personality &amp; Growth</h1>
+  <p>An evidence-based personality profile for people serious about career or business growth.</p>
+</header>
+<main id="app"></main>
+
+<script>
+/* =====================================================================
+   DATA — INSTRUMENTS
+   All public-domain or free-for-personal-use psychometric instruments.
+   ===================================================================== */
+
+const INSTRUMENTS = {
+  bigFive: {
+    id: 'bigFive',
+    name: 'Big Five Personality (BFI-10)',
+    blurb: 'Five broad dimensions of personality. The most replicated model in academic psychology.',
+    source: 'Rammstedt, B. & John, O. P. (2007). Journal of Research in Personality, 41(1), 203–212.',
+    likert: 5,
+    labels: ['Strongly disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly agree'],
+    prompt: 'I see myself as someone who…',
+    items: [
+      { text: 'is reserved',                              trait: 'extraversion',     reverse: true  },
+      { text: 'is generally trusting',                    trait: 'agreeableness',    reverse: false },
+      { text: 'tends to be lazy',                         trait: 'conscientiousness', reverse: true  },
+      { text: 'is relaxed, handles stress well',          trait: 'neuroticism',      reverse: true  },
+      { text: 'has few artistic interests',               trait: 'openness',         reverse: true  },
+      { text: 'is outgoing, sociable',                    trait: 'extraversion',     reverse: false },
+      { text: 'tends to find fault with others',          trait: 'agreeableness',    reverse: true  },
+      { text: 'does a thorough job',                      trait: 'conscientiousness', reverse: false },
+      { text: 'gets nervous easily',                      trait: 'neuroticism',      reverse: false },
+      { text: 'has an active imagination',                trait: 'openness',         reverse: false },
+    ],
+    // Norm means/SDs from Rammstedt & John (2007), averaged English+German samples.
+    norms: {
+      extraversion:      { m: 3.35, sd: 0.95 },
+      agreeableness:     { m: 3.65, sd: 0.78 },
+      conscientiousness: { m: 3.55, sd: 0.85 },
+      neuroticism:       { m: 2.90, sd: 0.95 },
+      openness:          { m: 3.60, sd: 0.85 },
+    },
+    traitLabels: {
+      extraversion:      'Extraversion',
+      agreeableness:     'Agreeableness',
+      conscientiousness: 'Conscientiousness',
+      neuroticism:       'Emotional Reactivity',
+      openness:          'Openness to Experience',
+    },
+  },
+
+  grit: {
+    id: 'grit',
+    name: 'Grit (Short Grit Scale)',
+    blurb: 'Perseverance and consistency of interest toward long-term goals. Predicts achievement beyond IQ.',
+    source: 'Duckworth, A. L. & Quinn, P. D. (2009). Journal of Personality Assessment, 91(2), 166–174.',
+    likert: 5,
+    labels: ['Not at all like me', 'Not much like me', 'Somewhat like me', 'Mostly like me', 'Very much like me'],
+    prompt: 'How well does each statement describe you?',
+    items: [
+      { text: 'New ideas and projects sometimes distract me from previous ones.',         trait: 'consistency',  reverse: true  },
+      { text: 'Setbacks don\'t discourage me. I don\'t give up easily.',                  trait: 'perseverance', reverse: false },
+      { text: 'I often set a goal but later choose to pursue a different one.',           trait: 'consistency',  reverse: true  },
+      { text: 'I am a hard worker.',                                                      trait: 'perseverance', reverse: false },
+      { text: 'I have difficulty maintaining focus on projects that take months to finish.', trait: 'consistency', reverse: true  },
+      { text: 'I finish whatever I begin.',                                               trait: 'perseverance', reverse: false },
+      { text: 'My interests change from year to year.',                                   trait: 'consistency',  reverse: true  },
+      { text: 'I am diligent. I never give up.',                                          trait: 'perseverance', reverse: false },
+    ],
+    norms: {
+      perseverance: { m: 3.80, sd: 0.65 },
+      consistency:  { m: 3.20, sd: 0.75 },
+      overall:      { m: 3.50, sd: 0.60 },
+    },
+    traitLabels: {
+      perseverance: 'Perseverance of Effort',
+      consistency:  'Consistency of Interest',
+      overall:      'Overall Grit',
+    },
+  },
+
+  via: {
+    id: 'via',
+    name: 'Character Strengths (VIA-24 screener)',
+    blurb: 'Twenty-four positive traits across six universal virtues. We surface your top 5 signature strengths.',
+    source: 'Peterson, C. & Seligman, M. E. P. (2004). Character Strengths and Virtues. Oxford University Press.',
+    likert: 5,
+    labels: ['Not me at all', 'A little like me', 'Somewhat like me', 'Mostly like me', 'Very much me'],
+    prompt: 'How well does each describe you?',
+    items: [
+      { text: 'I come up with new and original ideas.',                                                    trait: 'creativity'         },
+      { text: 'I\'m fascinated by learning new things, in any topic.',                                     trait: 'curiosity'          },
+      { text: 'I think things through and examine all sides before deciding.',                            trait: 'judgment'           },
+      { text: 'I love mastering new skills, topics, and bodies of knowledge.',                            trait: 'loveOfLearning'     },
+      { text: 'People often come to me for wise advice.',                                                 trait: 'perspective'        },
+      { text: 'I speak up for what\'s right even when it\'s unpopular.',                                  trait: 'bravery'            },
+      { text: 'I finish what I start, despite obstacles.',                                                trait: 'perseveranceVia'    },
+      { text: 'I live my life with integrity; I\'m authentic and genuine.',                               trait: 'honesty'            },
+      { text: 'I approach life with excitement and energy.',                                              trait: 'zest'               },
+      { text: 'I value close relationships and let myself give and receive love.',                        trait: 'love'               },
+      { text: 'I\'m generous and do favors for others without expecting return.',                         trait: 'kindness'           },
+      { text: 'I\'m aware of others\' feelings and what motivates them.',                                 trait: 'socialIntelligence' },
+      { text: 'I work well as a member of a group; I\'m a loyal teammate.',                               trait: 'teamwork'           },
+      { text: 'I treat all people equally and give everyone a fair chance.',                              trait: 'fairness'           },
+      { text: 'I help groups I belong to get things done while keeping people working well together.',    trait: 'leadership'         },
+      { text: 'I forgive those who have done me wrong and don\'t hold grudges.',                          trait: 'forgiveness'        },
+      { text: 'I let my accomplishments speak for themselves; I don\'t seek the spotlight.',              trait: 'humility'           },
+      { text: 'I make careful choices; I don\'t say or do things I might later regret.',                  trait: 'prudence'           },
+      { text: 'I control my emotions and appetites; I\'m disciplined.',                                   trait: 'selfRegulation'     },
+      { text: 'I notice and appreciate beauty and excellence in many domains of life.',                   trait: 'beauty'             },
+      { text: 'I\'m aware of and thankful for the good things that happen.',                              trait: 'gratitude'          },
+      { text: 'I expect the best in the future and work to achieve it.',                                  trait: 'hope'               },
+      { text: 'I like to laugh and bring smiles to others; I see the lighter side.',                      trait: 'humor'              },
+      { text: 'I have strong beliefs about a higher meaning or purpose in life.',                         trait: 'spirituality'       },
+    ],
+    traitLabels: {
+      creativity: 'Creativity', curiosity: 'Curiosity', judgment: 'Judgment',
+      loveOfLearning: 'Love of Learning', perspective: 'Perspective', bravery: 'Bravery',
+      perseveranceVia: 'Perseverance', honesty: 'Honesty', zest: 'Zest', love: 'Love',
+      kindness: 'Kindness', socialIntelligence: 'Social Intelligence', teamwork: 'Teamwork',
+      fairness: 'Fairness', leadership: 'Leadership', forgiveness: 'Forgiveness',
+      humility: 'Humility', prudence: 'Prudence', selfRegulation: 'Self-Regulation',
+      beauty: 'Appreciation of Beauty', gratitude: 'Gratitude', hope: 'Hope',
+      humor: 'Humor', spirituality: 'Spirituality',
+    },
+  },
+
+  efficacy: {
+    id: 'efficacy',
+    name: 'General Self-Efficacy (GSES)',
+    blurb: 'Your belief that you can handle novel and difficult demands. Linked to career and business success.',
+    source: 'Schwarzer, R. & Jerusalem, M. (1995). Measures in Health Psychology: A User\'s Portfolio. NFER-Nelson.',
+    likert: 4,
+    labels: ['Not at all true', 'Hardly true', 'Moderately true', 'Exactly true'],
+    prompt: 'How true is each statement for you?',
+    items: [
+      { text: 'I can always manage to solve difficult problems if I try hard enough.',           trait: 'efficacy' },
+      { text: 'If someone opposes me, I can find the means and ways to get what I want.',        trait: 'efficacy' },
+      { text: 'It is easy for me to stick to my aims and accomplish my goals.',                  trait: 'efficacy' },
+      { text: 'I am confident that I could deal efficiently with unexpected events.',            trait: 'efficacy' },
+      { text: 'Thanks to my resourcefulness, I know how to handle unforeseen situations.',       trait: 'efficacy' },
+      { text: 'I can solve most problems if I invest the necessary effort.',                     trait: 'efficacy' },
+      { text: 'I can remain calm when facing difficulties; I can rely on my coping abilities.',  trait: 'efficacy' },
+      { text: 'When I am confronted with a problem, I can usually find several solutions.',      trait: 'efficacy' },
+      { text: 'If I am in trouble, I can usually think of a solution.',                          trait: 'efficacy' },
+      { text: 'I can usually handle whatever comes my way.',                                     trait: 'efficacy' },
+    ],
+    // GSES is summed (range 10-40). International norm M=29.55, SD=5.32 (Scholz et al., 2002).
+    norms: {
+      efficacy: { m: 29.5, sd: 5.3, sum: true, min: 10, max: 40 },
+    },
+    traitLabels: { efficacy: 'General Self-Efficacy' },
+  },
+
+  loc: {
+    id: 'loc',
+    name: 'Locus of Control (Internal)',
+    blurb: 'How much you believe outcomes in your life are driven by your own actions rather than luck or external forces. Internal LoC predicts entrepreneurial success.',
+    source: 'Adapted from Rotter, J. B. (1966) and Levenson, H. (1981); short-form usage per Mueller, S. L. & Thomas, A. S. (2001), Journal of Business Venturing 16(1).',
+    likert: 5,
+    labels: ['Strongly disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly agree'],
+    prompt: 'How much do you agree with each statement?',
+    items: [
+      { text: 'When I make plans, I am almost certain that I can make them work.',     trait: 'internal' },
+      { text: 'My life is largely determined by my own actions.',                       trait: 'internal' },
+      { text: 'What happens to me is mostly my own doing.',                             trait: 'internal' },
+      { text: 'Whether I become a leader depends mostly on my ability, not luck.',     trait: 'internal' },
+      { text: 'When I get what I want, it\'s usually because I worked hard for it.',   trait: 'internal' },
+      { text: 'I can pretty much determine what will happen in my life.',              trait: 'internal' },
+    ],
+    norms: { internal: { m: 3.85, sd: 0.60 } },
+    traitLabels: { internal: 'Internal Locus of Control' },
+  },
+};
+
+const INSTRUMENT_ORDER = ['bigFive', 'grit', 'via', 'efficacy', 'loc'];
+
+/* =====================================================================
+   SCORING
+   ===================================================================== */
+
+function scoreInstrument(inst, responses) {
+  // responses: array of integers, same length as inst.items
+  const traits = {};
+  inst.items.forEach((item, i) => {
+    const v = responses[i];
+    if (v == null) return;
+    const top = inst.likert; // 4 or 5
+    const scored = item.reverse ? (top + 1 - v) : v;
+    if (!traits[item.trait]) traits[item.trait] = [];
+    traits[item.trait].push(scored);
+  });
+
+  const out = {};
+  for (const [trait, vals] of Object.entries(traits)) {
+    const sum = vals.reduce((a, b) => a + b, 0);
+    const mean = sum / vals.length;
+    out[trait] = { mean: round(mean, 2), sum, n: vals.length };
+  }
+
+  // Add derived overall score for grit
+  if (inst.id === 'grit' && out.perseverance && out.consistency) {
+    out.overall = {
+      mean: round((out.perseverance.mean + out.consistency.mean) / 2, 2),
+      n: 8,
+    };
+  }
+
+  // Apply band labels
+  for (const trait of Object.keys(out)) {
+    const norm = inst.norms?.[trait];
+    if (!norm) continue;
+    const useSum = norm.sum === true;
+    const value = useSum ? out[trait].sum : out[trait].mean;
+    out[trait].band = bandFor(value, norm);
+    out[trait].pct = pctFor(value, norm, useSum, inst.likert);
+  }
+  return out;
+}
+
+function bandFor(value, norm) {
+  // Low: < m - 0.5*sd ; Average: within ±0.5*sd ; High: > m + 0.5*sd
+  if (value < norm.m - 0.5 * norm.sd) return 'low';
+  if (value > norm.m + 0.5 * norm.sd) return 'high';
+  return 'avg';
+}
+
+function pctFor(value, norm, useSum, likert) {
+  // Map raw value to a 0–100 visual percentage.
+  // For sum-scored: linear within min..max. For mean: linear within 1..likert.
+  if (useSum) {
+    return clamp(((value - norm.min) / (norm.max - norm.min)) * 100, 0, 100);
+  }
+  return clamp(((value - 1) / (likert - 1)) * 100, 0, 100);
+}
+
+function round(n, d) { const m = Math.pow(10, d); return Math.round(n * m) / m; }
+function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
+function scoreVia(inst, responses) {
+  // VIA: rank the 24 strengths; top 5 = signature strengths.
+  const ranked = inst.items.map((it, i) => ({
+    trait: it.trait,
+    label: inst.traitLabels[it.trait],
+    score: responses[i] ?? 0,
+  })).sort((a, b) => b.score - a.score);
+  return {
+    ranked,
+    top5: ranked.slice(0, 5),
+    bottom5: ranked.slice(-5).reverse(),
+  };
+}
+
+/* =====================================================================
+   GROWTH RECOMMENDATIONS
+   Curated by score band. Sources cited.
+   ===================================================================== */
+
+const GROWTH = {
+  // Big Five
+  conscientiousness: {
+    low: [
+      { title: 'Adopt implementation intentions', why: 'If-then planning closes the gap between intent and action — most effective for people low on conscientiousness.',
+        how: 'For each weekly goal write: "If [trigger / time / place], then I will [action]." Review on Sunday evenings.',
+        source: 'Gollwitzer, P. M. (1999). American Psychologist, 54(7), 493–503.' },
+      { title: 'Time-block your calendar', why: 'Unstructured time defaults to low-value work. Time-blocking externalises the discipline.',
+        how: 'Each Sunday block the next week into 60–90 min focus sessions tied to your top 3 outcomes.',
+        source: 'Newport, C. (2016). Deep Work. Grand Central Publishing.' },
+    ],
+    avg: [
+      { title: 'Add stretch goals on top of routine', why: 'Locke & Latham\'s 35-year programme found specific, difficult goals raise performance ~16% over "do your best".',
+        how: 'For your single biggest project this quarter, define one outcome that scares you slightly and write the first 3 sub-tasks.',
+        source: 'Locke, E. A. & Latham, G. P. (2002). American Psychologist, 57(9), 705–717.' },
+    ],
+    high: [
+      { title: 'Audit for perfectionism', why: 'Very high conscientiousness can tip into perfectionism, which is linked to burnout and slower shipping.',
+        how: 'For your next 5 deliverables ask: "What\'s the lowest-quality version of this that still serves the goal?" Ship that.',
+        source: 'Hill, A. P. & Curran, T. (2016). Personality and Social Psychology Review, 20(4), 269–288.' },
+    ],
+  },
+  openness: {
+    low: [
+      { title: 'Schedule a weekly curiosity hour', why: 'Openness can be raised by deliberate exposure to novel domains — especially valuable when your industry is changing.',
+        how: 'Block one hour weekly to consume something well outside your field (a podcast, paper, or talk). Write one sentence on what surprised you.',
+        source: 'Jackson, J. J. et al. (2012). Psychology and Aging, 27(2), 286–292.' },
+    ],
+    avg: [
+      { title: 'Cross-pollinate disciplines', why: 'Breakthroughs cluster where fields collide. Moderate openness benefits from deliberate framing.',
+        how: 'Pick one problem you\'re stuck on. Spend 30 min reading how a completely different field solves an analogue.',
+        source: 'Johansson, F. (2004). The Medici Effect. Harvard Business School Press.' },
+    ],
+    high: [
+      { title: 'Build a "parking lot" for ideas', why: 'Very high openness can fracture focus across too many projects. Capture without committing.',
+        how: 'Keep a single doc called "Later." When a shiny idea appears, write one line there and return to current work.',
+        source: 'Allen, D. (2001). Getting Things Done. Penguin.' },
+    ],
+  },
+  extraversion: {
+    low: [
+      { title: 'Embrace quiet leadership', why: 'Introverts outperform extraverts as leaders when teams are proactive — leverage your default, don\'t fake extraversion.',
+        how: 'Schedule one structured 1:1 per direct report or client per week. Ask three good questions and listen.',
+        source: 'Grant, A. M., Gino, F. & Hofmann, D. A. (2011). Academy of Management Journal, 54(3), 528–550.' },
+      { title: 'Set a small networking quota', why: 'Career progression correlates strongly with weak-tie networks, regardless of where you start.',
+        how: 'Have one deliberate conversation per week with someone outside your immediate team or company.',
+        source: 'Granovetter, M. S. (1973). American Journal of Sociology, 78(6), 1360–1380.' },
+    ],
+    avg: [
+      { title: 'Map your network deliberately', why: 'Most people\'s networks are accidental. Mapping reveals the gaps that block opportunities.',
+        how: 'List your 20 most-contacted people. Tag each by domain. Identify the missing domain and find someone there.',
+        source: 'Ibarra, H. (2003). Working Identity. Harvard Business School Press.' },
+    ],
+    high: [
+      { title: 'Schedule solitude for deep work', why: 'High extraversion biases toward shallow social work; deliberate solitude is when strategy actually happens.',
+        how: 'Block two 90-minute solitude sessions per week. Phone off. One open question per session.',
+        source: 'Newport, C. (2016). Deep Work. Grand Central Publishing.' },
+    ],
+  },
+  agreeableness: {
+    low: [
+      { title: 'Practice the positive "no"', why: 'Low agreeableness gets the assertiveness right but can damage relationships. Saying no while affirming the relationship preserves both.',
+        how: 'Structure refusals as: Yes (to a value you hold) — No (to the specific ask) — Yes (an alternative or what you can do).',
+        source: 'Ury, W. (2007). The Power of a Positive No. Bantam.' },
+      { title: 'Build psychological safety in your team', why: 'Edmondson\'s research: team safety is the #1 predictor of team performance. Low-agreeableness leaders erode it accidentally.',
+        how: 'Before every team decision say: "What\'s the case against this?" out loud. Reward dissent visibly.',
+        source: 'Edmondson, A. (2018). The Fearless Organization. Wiley.' },
+    ],
+    avg: [
+      { title: 'Develop principled negotiation', why: 'Average agreeableness can default to compromise. Principled negotiation finds the bigger pie instead.',
+        how: 'In your next 3 negotiations, separate the person from the problem and explicitly ask: "What are your interests behind that position?"',
+        source: 'Fisher, R. & Ury, W. (1981). Getting to Yes. Penguin.' },
+    ],
+    high: [
+      { title: 'Audit for over-accommodation', why: 'Very high agreeableness correlates with lower negotiated salaries and yielding on important decisions.',
+        how: 'Pick your two most important asks in the next 30 days. Decide the walk-away in advance. Don\'t move it during the conversation.',
+        source: 'Judge, T. A. et al. (2012). Journal of Personality and Social Psychology, 102(2), 390–407.' },
+    ],
+  },
+  neuroticism: {
+    high: [
+      { title: 'Cognitive reframing', why: 'High emotional reactivity amplifies setbacks. Reframing the meaning of an event has a larger effect than suppressing the feeling.',
+        how: 'When triggered: write "what I think happened," then "three other plausible interpretations." Pick the most useful one to act from.',
+        source: 'Gross, J. J. (1998). Review of General Psychology, 2(3), 271–299.' },
+      { title: 'Box breathing for acute stress', why: 'Slow paced breathing engages the parasympathetic nervous system within minutes; effective for pre-meeting or pre-pitch nerves.',
+        how: 'Before high-stakes moments: inhale 4s, hold 4s, exhale 4s, hold 4s — four rounds.',
+        source: 'Zaccaro, A. et al. (2018). Frontiers in Human Neuroscience, 12, 353.' },
+    ],
+    avg: [
+      { title: 'Build a personal early-warning list', why: 'Average reactivity still spikes under chronic stress. Naming early signals lets you intervene before performance drops.',
+        how: 'List 5 personal early-warning signs (e.g., short sleep, missed exercise, snapping at family). Track weekly.',
+        source: 'McEwen, B. S. (2007). Physiological Reviews, 87(3), 873–904.' },
+    ],
+    low: [
+      { title: 'Don\'t confuse calm with complacency', why: 'Very low emotional reactivity can blunt urgency. Some healthy alarm fuels action.',
+        how: 'Once a quarter run a personal "pre-mortem": assume the next quarter failed — list why. Address the top 2 risks now.',
+        source: 'Klein, G. (2007). Harvard Business Review, September.' },
+    ],
+  },
+
+  // Grit
+  perseverance: {
+    low: [
+      { title: 'Identify your top-level goal', why: 'Grit is harder when daily tasks aren\'t connected to a top-level meaning. Make the goal hierarchy explicit.',
+        how: 'Write your top-level goal in one sentence. Then write the 3 mid-level goals beneath, then today\'s tasks beneath those.',
+        source: 'Duckworth, A. L. (2016). Grit: The Power of Passion and Perseverance. Scribner.' },
+    ],
+    avg: [
+      { title: 'Plan the obstacle, not the goal', why: 'Mental contrasting + implementation intentions outperforms positive thinking alone.',
+        how: 'For each goal: name the wish, the best outcome, the obstacle, the if-then plan. (WOOP method.)',
+        source: 'Oettingen, G. (2014). Rethinking Positive Thinking. Current.' },
+    ],
+    high: [
+      { title: 'Strategic quitting', why: 'High perseverance keeps you in the wrong things too long. Make quitting a deliberate decision, not a failure.',
+        how: 'Every quarter list active commitments. For each, ask: "Knowing what I know now, would I start this today?" Sunset the no\'s.',
+        source: 'Godin, S. (2007). The Dip. Portfolio.' },
+    ],
+  },
+  consistency: {
+    low: [
+      { title: 'Hedgehog discipline', why: 'Low consistency of interest looks like distractibility but is actually a missing organising principle. The hedgehog concept supplies one.',
+        how: 'Find the intersection of: what you\'re best at, what drives your economic engine, and what you\'re deeply passionate about. Say no to everything outside it for 90 days.',
+        source: 'Collins, J. (2001). Good to Great. HarperBusiness.' },
+    ],
+    avg: [],
+    high: [
+      { title: 'Sunset the sunk cost', why: 'Very high consistency of interest pairs poorly with changing markets. Sunk-cost vigilance is the antidote.',
+        how: 'Once a quarter ask: "If I weren\'t already invested in X, would I start it today?" If no, design the exit.',
+        source: 'Arkes, H. R. & Blumer, C. (1985). Organizational Behavior and Human Decision Processes, 35(1), 124–140.' },
+    ],
+  },
+
+  // Self-efficacy
+  efficacy: {
+    low: [
+      { title: 'Engineer small mastery experiences', why: 'Bandura: mastery experiences are the strongest source of self-efficacy. Start with wins you control.',
+        how: 'Pick one skill this month. Define the smallest visible win (a tiny shipped artefact). Ship it weekly for 4 weeks.',
+        source: 'Bandura, A. (1997). Self-Efficacy: The Exercise of Control. Freeman.' },
+      { title: 'Find one credible model', why: 'Vicarious experience is the second-strongest efficacy source — when the model is "like me."',
+        how: 'Identify one person 2–3 years ahead of you on a path you want. Read their writing or schedule a conversation.',
+        source: 'Bandura, A. (1997). Self-Efficacy: The Exercise of Control. Freeman.' },
+    ],
+    avg: [
+      { title: 'Stretch the comfort zone weekly', why: 'Moderate efficacy grows by deliberate stretching, not by waiting for confidence.',
+        how: 'Each week, do one thing 10% harder than last week\'s version: a bigger pitch, a harder customer call, a more ambitious estimate.',
+        source: 'Bandura, A. (1997). Self-Efficacy: The Exercise of Control. Freeman.' },
+    ],
+    high: [
+      { title: 'Calibrate against base rates', why: 'High self-efficacy can drift into overconfidence. Calibration training keeps it useful.',
+        how: 'For your next 10 estimates (timelines, revenue, hiring), write a written prediction with a 70% confidence interval. Review accuracy quarterly.',
+        source: 'Moore, D. A. & Healy, P. J. (2008). Psychological Review, 115(2), 502–517.' },
+    ],
+  },
+
+  // Locus of control
+  internal: {
+    low: [
+      { title: 'Wins journal', why: 'External locus is partly habit — people who attribute wins to luck don\'t encode the agency. Writing it makes it stick.',
+        how: 'Every Friday write 3 things that went well this week and your specific action that caused each. 8 weeks.',
+        source: 'Seligman, M. E. P. et al. (2005). American Psychologist, 60(5), 410–421.' },
+      { title: 'Reattribution training', why: 'CBT-style reattribution shifts locus from external to internal in 6–8 sessions of practice.',
+        how: 'When something bad happens, write: external cause, internal cause, action I can take. Act from the third column.',
+        source: 'Försterling, F. (1985). Psychological Bulletin, 98(3), 495–512.' },
+    ],
+    avg: [],
+    high: [
+      { title: 'Acknowledge what you don\'t control', why: 'Very high internal LoC can become self-blame when external forces (market, timing) genuinely cause outcomes.',
+        how: 'Before reviewing a failure: list 5 factors outside your control that contributed. Then list what you would still do differently.',
+        source: 'Rotter, J. B. (1966). Psychological Monographs, 80(1), 1–28.' },
+    ],
+  },
+};
+
+// VIA strengths: amplification, not remediation. For each signature strength, suggest a career/business application.
+const VIA_AMPLIFY = {
+  creativity:         { how: 'Run a 30-min "what if" session weekly on your biggest constraint. Generate before you evaluate.' },
+  curiosity:          { how: 'Make customer or stakeholder interviews a weekly habit; your curiosity will outpace surveys.' },
+  judgment:           { how: 'Volunteer for the "devil\'s advocate" role in your team\'s biggest decisions this quarter.' },
+  loveOfLearning:     { how: 'Pick one technical or domain skill per quarter and write a one-page synthesis for your team.' },
+  perspective:        { how: 'Offer 30-min advisory sessions to junior people in your network; it sharpens your own thinking.' },
+  bravery:            { how: 'In your next strategic meeting, name the thing nobody is saying. Reward yourself for the discomfort.' },
+  perseveranceVia:    { how: 'Pick the project most likely to be quit when it gets hard. Pre-commit publicly to a finish date.' },
+  honesty:            { how: 'Build a reputation for accurate forecasting. Track your estimates and publish hit rates.' },
+  zest:               { how: 'Volunteer to open and close team meetings. Your energy sets the tone faster than any deck.' },
+  love:               { how: 'Invest in deep relationships with 5 key collaborators rather than maintaining 50 thin ones.' },
+  kindness:           { how: 'Make one "no-ask" introduction per week — connect two people who should know each other.' },
+  socialIntelligence: { how: 'Take on the hardest stakeholder conversations. Your read of the room is a rare asset.' },
+  teamwork:           { how: 'Push for shared metrics over individual ones; you raise the floor of any team you join.' },
+  fairness:           { how: 'Design the team\'s decision and review processes; your bias for fairness builds trust.' },
+  leadership:         { how: 'Offer to chair the cross-functional initiative everyone is avoiding. That\'s where reputations are built.' },
+  forgiveness:        { how: 'Repair one strained working relationship this quarter. Reach out specifically about a past friction.' },
+  humility:           { how: 'Use your humility to attract talent more confident than you; they\'ll thrive under low-ego leadership.' },
+  prudence:           { how: 'Own the risk register or pre-mortem on big bets. Your caution is a deliverable, not a drag.' },
+  selfRegulation:     { how: 'Become the person your team relies on under pressure. Volunteer for the next crisis response.' },
+  beauty:             { how: 'Raise the bar on craft in something visible — pitch decks, product polish, written communication.' },
+  gratitude:          { how: 'Send one specific, written thank-you per week to someone whose work made yours possible.' },
+  hope:               { how: 'Be the voice that names what could go right. In hard quarters, optimism is a leadership asset.' },
+  humor:              { how: 'Use humour to defuse tension in negotiations and feedback. Keep it punching up, never down.' },
+  spirituality:       { how: 'Anchor decisions to a written personal "purpose statement." Re-read it before major choices.' },
+};
+
+/* =====================================================================
+   SYNTHESIS — 6 career/business themes built from cross-instrument signals
+   ===================================================================== */
+
+const THEMES = [
+  {
+    id: 'execution',
+    name: 'Execution & follow-through',
+    careerDesc: 'How reliably you turn intent into shipped outcomes. The single biggest predictor of promotion velocity across industries.',
+    businessDesc: 'How reliably your business actually executes on plans. Founders strong here ship; weak here ideate without ever launching.',
+    inputs: [
+      { key: 'bigFive.conscientiousness', weight: 0.4, dir: 1 },
+      { key: 'grit.perseverance',          weight: 0.3, dir: 1 },
+      { key: 'efficacy.efficacy',          weight: 0.3, dir: 1 },
+    ],
+  },
+  {
+    id: 'resilience',
+    name: 'Resilience under pressure',
+    careerDesc: 'How well you sustain performance through setbacks, ambiguity, and stress. Critical for senior roles where the noise never stops.',
+    businessDesc: 'Your ability to hold the wheel through downturns, hard customer conversations, and existential founder moments.',
+    inputs: [
+      { key: 'bigFive.neuroticism',  weight: 0.4, dir: -1 },
+      { key: 'loc.internal',         weight: 0.3, dir: 1  },
+      { key: 'efficacy.efficacy',    weight: 0.3, dir: 1  },
+    ],
+  },
+  {
+    id: 'leadership',
+    name: 'Leadership & influence',
+    careerDesc: 'Capacity to mobilise others toward a shared goal. Required for any role beyond individual contributor.',
+    businessDesc: 'Your ability to hire, motivate, and retain a team — and to influence customers, partners, and investors.',
+    inputs: [
+      { key: 'bigFive.extraversion',     weight: 0.30, dir: 1 },
+      { key: 'via.leadership',           weight: 0.25, dir: 1 },
+      { key: 'via.socialIntelligence',   weight: 0.25, dir: 1 },
+      { key: 'efficacy.efficacy',        weight: 0.20, dir: 1 },
+    ],
+  },
+  {
+    id: 'innovation',
+    name: 'Innovation & adaptability',
+    careerDesc: 'How well you spot opportunities, learn new domains, and adapt when the rules change. Increasingly load-bearing as careers lengthen.',
+    businessDesc: 'Your ability to pivot, find product-market fit, and stay ahead of disruption.',
+    inputs: [
+      { key: 'bigFive.openness',     weight: 0.4, dir: 1 },
+      { key: 'via.creativity',       weight: 0.3, dir: 1 },
+      { key: 'via.curiosity',        weight: 0.3, dir: 1 },
+    ],
+  },
+  {
+    id: 'integrity',
+    name: 'Integrity & trust',
+    careerDesc: 'The trust you build in others — the slow-compounding asset that determines who chooses to work with you again.',
+    businessDesc: 'The reputation capital your business runs on. Customers and partners forgive a lot, but rarely forgive broken trust.',
+    inputs: [
+      { key: 'bigFive.agreeableness', weight: 0.25, dir: 1 },
+      { key: 'via.honesty',           weight: 0.30, dir: 1 },
+      { key: 'via.fairness',          weight: 0.25, dir: 1 },
+      { key: 'via.prudence',          weight: 0.20, dir: 1 },
+    ],
+  },
+  {
+    id: 'empathy',
+    name: 'Customer & team empathy',
+    careerDesc: 'Your read of what others actually want and need. Underrated in technical careers; load-bearing in any people-facing one.',
+    businessDesc: 'The skill behind every great product decision and every retained employee. Empathy compounds into market intuition.',
+    inputs: [
+      { key: 'bigFive.agreeableness',     weight: 0.30, dir: 1 },
+      { key: 'via.kindness',              weight: 0.25, dir: 1 },
+      { key: 'via.socialIntelligence',    weight: 0.25, dir: 1 },
+      { key: 'via.love',                  weight: 0.20, dir: 1 },
+    ],
+  },
+];
+
+function resolveSignal(scores, key) {
+  // key like 'bigFive.conscientiousness' or 'via.leadership'
+  const [inst, trait] = key.split('.');
+  if (inst === 'via') {
+    const item = scores.via.ranked.find(r => r.trait === trait);
+    if (!item) return null;
+    // VIA items are Likert 1..5
+    return { value: item.score, likert: 5, useSum: false };
+  }
+  const s = scores[inst]?.[trait];
+  if (!s) return null;
+  const norm = INSTRUMENTS[inst].norms?.[trait];
+  const likert = INSTRUMENTS[inst].likert;
+  const useSum = !!norm?.sum;
+  const value = useSum ? s.sum : s.mean;
+  return { value, likert, useSum, norm };
+}
+
+function themeScore(theme, scores) {
+  // Each input contributes a 0..100 sub-score. Combine by weighted sum.
+  let total = 0;
+  let wsum = 0;
+  const breakdown = [];
+  for (const inp of theme.inputs) {
+    const sig = resolveSignal(scores, inp.key);
+    if (!sig) continue;
+    let pct;
+    if (sig.useSum && sig.norm) {
+      pct = ((sig.value - sig.norm.min) / (sig.norm.max - sig.norm.min)) * 100;
+    } else {
+      pct = ((sig.value - 1) / (sig.likert - 1)) * 100;
+    }
+    pct = clamp(pct, 0, 100);
+    const contrib = inp.dir === 1 ? pct : (100 - pct);
+    total += contrib * inp.weight;
+    wsum += inp.weight;
+    breakdown.push({ key: inp.key, pct: round(contrib, 0), weight: inp.weight });
+  }
+  const score = wsum > 0 ? total / wsum : 0;
+  // Weakest input = primary growth focus
+  breakdown.sort((a, b) => a.pct - b.pct);
+  return { score: round(score, 0), breakdown };
+}
+
+function themeInterpretation(scoreValue) {
+  if (scoreValue >= 70) return { tag: 'Strong', tone: 'high' };
+  if (scoreValue >= 45) return { tag: 'Developing', tone: 'avg' };
+  return { tag: 'Growth area', tone: 'low' };
+}
+
+/* =====================================================================
+   STORAGE — localStorage wrapper
+   ===================================================================== */
+
+const STORAGE_KEY = 'personality-app:v1';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+function saveState(s) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch {}
+}
+function clearState() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch {}
+}
+
+/* =====================================================================
+   APP STATE
+   ===================================================================== */
+
+const STATE = {
+  view: 'welcome',          // welcome | runner | report
+  persona: null,            // 'career' | 'business'
+  reportTab: 'synthesis',   // synthesis | bigFive | grit | via | efficacy | loc
+  instrumentIdx: 0,
+  itemIdx: 0,
+  responses: {              // keyed by instrument id, array of integers
+    bigFive: [], grit: [], via: [], efficacy: [], loc: [],
+  },
+};
+
+function persist() {
+  saveState({
+    persona: STATE.persona,
+    instrumentIdx: STATE.instrumentIdx,
+    itemIdx: STATE.itemIdx,
+    responses: STATE.responses,
+    view: STATE.view,
+  });
+}
+
+function restore() {
+  const s = loadState();
+  if (!s) return false;
+  if (s.persona)        STATE.persona = s.persona;
+  if (s.responses)      STATE.responses = { ...STATE.responses, ...s.responses };
+  if (s.instrumentIdx != null) STATE.instrumentIdx = s.instrumentIdx;
+  if (s.itemIdx != null)       STATE.itemIdx = s.itemIdx;
+  if (s.view)           STATE.view = s.view;
+  return true;
+}
+
+/* =====================================================================
+   RENDER HELPERS
+   ===================================================================== */
+
+const $app = document.getElementById('app');
+
+function el(html) {
+  // Returns a DocumentFragment so templates with multiple top-level elements are preserved.
+  const t = document.createElement('template');
+  t.innerHTML = html.trim();
+  return t.content;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[m]);
+}
+
+function totalItems() {
+  return INSTRUMENT_ORDER.reduce((n, id) => n + INSTRUMENTS[id].items.length, 0);
+}
+function totalAnswered() {
+  return INSTRUMENT_ORDER.reduce((n, id) => n + (STATE.responses[id] || []).filter(v => v != null).length, 0);
+}
+
+function isComplete() {
+  return INSTRUMENT_ORDER.every(id =>
+    (STATE.responses[id] || []).filter(v => v != null).length === INSTRUMENTS[id].items.length
+  );
+}
+
+/* =====================================================================
+   VIEW: WELCOME
+   ===================================================================== */
+
+function renderWelcome() {
+  const hasProgress = totalAnswered() > 0 && !isComplete();
+  const complete = isComplete();
+
+  $app.innerHTML = '';
+  $app.appendChild(el(`
+    <section class="card">
+      <h2>What this is</h2>
+      <p class="lede">A short personality assessment built from instruments validated in peer-reviewed research,
+      designed for people working on their career or running a business.</p>
+
+      <div class="stat-row">
+        <div class="stat"><div class="v">5</div><div class="l">Instruments</div></div>
+        <div class="stat"><div class="v">~58</div><div class="l">Questions</div></div>
+        <div class="stat"><div class="v">~10 min</div><div class="l">To complete</div></div>
+        <div class="stat"><div class="v">100%</div><div class="l">Stays in your browser</div></div>
+      </div>
+
+      <h3 style="margin-top:18px">Instruments used</h3>
+      <ul class="citation-list" style="font-size:13px;color:var(--text)">
+        <li><b>Big Five (BFI-10)</b> — Rammstedt &amp; John, 2007.</li>
+        <li><b>Short Grit Scale</b> — Duckworth &amp; Quinn, 2009.</li>
+        <li><b>VIA Character Strengths (24-item screener)</b> — Peterson &amp; Seligman, 2004.</li>
+        <li><b>General Self-Efficacy Scale</b> — Schwarzer &amp; Jerusalem, 1995.</li>
+        <li><b>Internal Locus of Control (short)</b> — adapted from Rotter (1966) and Levenson (1981).</li>
+      </ul>
+      <p class="small" style="margin-top:10px">No MBTI, DISC, or Enneagram — those don't meet the psychometric bar for high-stakes career decisions.</p>
+    </section>
+
+    <section class="card" id="persona-card">
+      <h2>Why are you here?</h2>
+      <p class="lede">Your answers don't change — but the report's framing does.</p>
+      <div class="persona-grid">
+        <div class="persona-opt ${STATE.persona === 'career' ? 'selected' : ''}" data-persona="career">
+          <div class="ttl">Career growth</div>
+          <div class="desc">I work in a company or want to. I want to know where to invest in myself for promotion and impact.</div>
+        </div>
+        <div class="persona-opt ${STATE.persona === 'business' ? 'selected' : ''}" data-persona="business">
+          <div class="ttl">Running a business</div>
+          <div class="desc">I own or am building a business. I want to know my strengths as a founder and where I'll need help.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>${complete ? 'You\'ve finished the assessment' : (hasProgress ? 'Resume your assessment' : 'Start the assessment')}</h2>
+      <p class="lede">
+        ${complete
+          ? 'View your synthesized report below, or retake the assessment from scratch.'
+          : (hasProgress
+              ? `You're ${totalAnswered()} / ${totalItems()} questions in. Your answers are saved in this browser only.`
+              : 'Single question per screen. You can stop and resume any time.')}
+      </p>
+      <div class="row">
+        ${complete
+          ? `<button class="btn-primary" id="view-report">View report</button>
+             <button class="btn-ghost" id="retake">Start over</button>`
+          : `<button class="btn-primary" id="begin" ${STATE.persona ? '' : 'disabled'}>${hasProgress ? 'Resume' : 'Begin'}</button>
+             ${hasProgress ? '<button class="btn-ghost" id="retake">Start over</button>' : ''}`}
+      </div>
+      ${!STATE.persona && !complete ? '<p class="small" style="margin-top:10px">Pick a focus above to enable Begin.</p>' : ''}
+    </section>
+  `));
+
+  // Listeners
+  $app.querySelectorAll('.persona-opt').forEach(node => {
+    node.addEventListener('click', () => {
+      STATE.persona = node.dataset.persona;
+      persist();
+      renderWelcome();
+    });
+  });
+  const begin = $app.querySelector('#begin');
+  if (begin) begin.addEventListener('click', () => {
+    // Find the first unanswered position
+    let inst = 0, item = 0;
+    for (let i = 0; i < INSTRUMENT_ORDER.length; i++) {
+      const id = INSTRUMENT_ORDER[i];
+      const r = STATE.responses[id] || [];
+      const next = INSTRUMENTS[id].items.findIndex((_, idx) => r[idx] == null);
+      if (next >= 0) { inst = i; item = next; break; }
+      inst = i; item = INSTRUMENTS[id].items.length; // fully done, move to next
+    }
+    STATE.instrumentIdx = inst;
+    STATE.itemIdx = item;
+    STATE.view = 'runner';
+    persist();
+    renderRunner();
+  });
+  const retake = $app.querySelector('#retake');
+  if (retake) retake.addEventListener('click', () => {
+    if (!confirm('Clear all answers and start over?')) return;
+    STATE.responses = { bigFive: [], grit: [], via: [], efficacy: [], loc: [] };
+    STATE.instrumentIdx = 0;
+    STATE.itemIdx = 0;
+    STATE.view = 'welcome';
+    persist();
+    renderWelcome();
+  });
+  const view = $app.querySelector('#view-report');
+  if (view) view.addEventListener('click', () => {
+    STATE.view = 'report';
+    persist();
+    renderReport();
+  });
+}
+
+/* =====================================================================
+   VIEW: RUNNER
+   ===================================================================== */
+
+function renderRunner() {
+  const inst = INSTRUMENTS[INSTRUMENT_ORDER[STATE.instrumentIdx]];
+  const item = inst.items[STATE.itemIdx];
+  const responses = STATE.responses[inst.id] = STATE.responses[inst.id] || [];
+  const selected = responses[STATE.itemIdx];
+  const overall = totalAnswered();
+  const pct = (overall / totalItems()) * 100;
+
+  // Likert option labels: show ends + middle to reduce visual noise
+  const labels = inst.labels;
+  const optsHtml = labels.map((lbl, i) => {
+    const val = i + 1;
+    const sel = selected === val ? 'selected' : '';
+    return `<button class="likert-opt ${sel}" data-val="${val}">
+      <span class="num">${val}</span>
+      <span class="lbl">${escapeHtml(lbl)}</span>
+    </button>`;
+  }).join('');
+
+  // Prompt prefix
+  const prefix = inst.id === 'bigFive' ? '<span class="small">I see myself as someone who…</span><br>' : '';
+
+  $app.innerHTML = '';
+  $app.appendChild(el(`
+    <section class="card no-print">
+      <div class="row between" style="margin-bottom:6px">
+        <div class="small">${escapeHtml(inst.name)} — Question ${STATE.itemIdx + 1} of ${inst.items.length}</div>
+        <div class="small">${overall} / ${totalItems()} overall</div>
+      </div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+
+      <p class="small" style="margin:4px 0 6px">${escapeHtml(inst.prompt)}</p>
+      <div class="likert-q">${prefix}${escapeHtml(item.text)}</div>
+
+      <div class="likert-scale ${inst.likert === 4 ? 'four' : ''}">${optsHtml}</div>
+
+      <div class="row between" style="margin-top:14px">
+        <button class="btn-ghost" id="back" ${STATE.instrumentIdx === 0 && STATE.itemIdx === 0 ? 'disabled' : ''}>← Back</button>
+        <div class="row">
+          <button class="btn-ghost" id="to-welcome">Save &amp; exit</button>
+          <button class="btn-primary" id="next" ${selected == null ? 'disabled' : ''}>${isLastItem() ? 'Finish' : 'Next →'}</button>
+        </div>
+      </div>
+    </section>
+  `));
+
+  $app.querySelectorAll('.likert-opt').forEach(node => {
+    node.addEventListener('click', () => {
+      const val = parseInt(node.dataset.val, 10);
+      STATE.responses[inst.id][STATE.itemIdx] = val;
+      persist();
+      // Auto-advance for snappier flow
+      if (isLastItem()) {
+        // Just highlight and let user click Finish (avoids accidental jump to report)
+        renderRunner();
+      } else {
+        advance();
+        renderRunner();
+      }
+    });
+  });
+  $app.querySelector('#next').addEventListener('click', () => {
+    if (isLastItem()) {
+      STATE.view = 'report';
+      persist();
+      renderReport();
+    } else {
+      advance();
+      renderRunner();
+    }
+  });
+  $app.querySelector('#back').addEventListener('click', () => {
+    retreat();
+    renderRunner();
+  });
+  $app.querySelector('#to-welcome').addEventListener('click', () => {
+    STATE.view = 'welcome';
+    persist();
+    renderWelcome();
+  });
+}
+
+function isLastItem() {
+  return STATE.instrumentIdx === INSTRUMENT_ORDER.length - 1 &&
+         STATE.itemIdx === INSTRUMENTS[INSTRUMENT_ORDER[STATE.instrumentIdx]].items.length - 1;
+}
+function advance() {
+  const inst = INSTRUMENTS[INSTRUMENT_ORDER[STATE.instrumentIdx]];
+  if (STATE.itemIdx < inst.items.length - 1) {
+    STATE.itemIdx++;
+  } else if (STATE.instrumentIdx < INSTRUMENT_ORDER.length - 1) {
+    STATE.instrumentIdx++;
+    STATE.itemIdx = 0;
+  }
+  persist();
+}
+function retreat() {
+  if (STATE.itemIdx > 0) {
+    STATE.itemIdx--;
+  } else if (STATE.instrumentIdx > 0) {
+    STATE.instrumentIdx--;
+    STATE.itemIdx = INSTRUMENTS[INSTRUMENT_ORDER[STATE.instrumentIdx]].items.length - 1;
+  }
+  persist();
+}
+
+/* =====================================================================
+   VIEW: REPORT
+   ===================================================================== */
+
+function computeAllScores() {
+  return {
+    bigFive:  scoreInstrument(INSTRUMENTS.bigFive,  STATE.responses.bigFive),
+    grit:     scoreInstrument(INSTRUMENTS.grit,     STATE.responses.grit),
+    via:      scoreVia(INSTRUMENTS.via,             STATE.responses.via),
+    efficacy: scoreInstrument(INSTRUMENTS.efficacy, STATE.responses.efficacy),
+    loc:      scoreInstrument(INSTRUMENTS.loc,      STATE.responses.loc),
+  };
+}
+
+function renderReport() {
+  if (!isComplete()) {
+    $app.innerHTML = '';
+    $app.appendChild(el(`
+      <section class="card">
+        <h2>Almost there</h2>
+        <p>You haven't finished all questions yet.</p>
+        <button class="btn-primary" id="continue">Continue assessment</button>
+      </section>
+    `));
+    $app.querySelector('#continue').addEventListener('click', () => {
+      STATE.view = 'runner';
+      renderRunner();
+    });
+    return;
+  }
+
+  const scores = computeAllScores();
+
+  $app.innerHTML = '';
+  $app.appendChild(el(`
+    <section class="card no-print">
+      <div class="row between">
+        <div>
+          <h2 style="margin:0">Your report</h2>
+          <p class="small" style="margin:2px 0 0">Framed for: <b>${STATE.persona === 'business' ? 'running a business' : 'career growth'}</b>.
+            <button class="btn-ghost" style="padding:2px 8px;font-size:12px;margin-left:6px" id="toggle-persona">Switch</button>
+          </p>
+        </div>
+        <div class="row">
+          <button class="btn-ghost" id="print-btn">Print / Save as PDF</button>
+          <button class="btn-ghost" id="back-welcome">Home</button>
+        </div>
+      </div>
+
+      <div class="nav-tabs">
+        <button class="nav-tab ${STATE.reportTab === 'synthesis' ? 'active' : ''}" data-tab="synthesis">Synthesis</button>
+        <button class="nav-tab ${STATE.reportTab === 'bigFive' ? 'active' : ''}" data-tab="bigFive">Big Five</button>
+        <button class="nav-tab ${STATE.reportTab === 'grit' ? 'active' : ''}" data-tab="grit">Grit</button>
+        <button class="nav-tab ${STATE.reportTab === 'via' ? 'active' : ''}" data-tab="via">Strengths</button>
+        <button class="nav-tab ${STATE.reportTab === 'efficacy' ? 'active' : ''}" data-tab="efficacy">Self-Efficacy</button>
+        <button class="nav-tab ${STATE.reportTab === 'loc' ? 'active' : ''}" data-tab="loc">Locus of Control</button>
+      </div>
+    </section>
+
+    <div id="report-body"></div>
+
+    <section class="card">
+      <h3>About these results</h3>
+      <p class="small">All instruments used here are published, peer-reviewed psychometrics with established validity and reliability. Your raw answers and scores stay in this browser only.</p>
+      <ul class="citation-list">
+        ${Object.values(INSTRUMENTS).map(i => `<li>${escapeHtml(i.name)} — ${escapeHtml(i.source)}</li>`).join('')}
+      </ul>
+    </section>
+  `));
+
+  $app.querySelectorAll('.nav-tab').forEach(node => {
+    node.addEventListener('click', () => {
+      STATE.reportTab = node.dataset.tab;
+      renderReport();
+    });
+  });
+  $app.querySelector('#print-btn').addEventListener('click', () => window.print());
+  $app.querySelector('#back-welcome').addEventListener('click', () => {
+    STATE.view = 'welcome';
+    persist();
+    renderWelcome();
+  });
+  $app.querySelector('#toggle-persona').addEventListener('click', () => {
+    STATE.persona = STATE.persona === 'business' ? 'career' : 'business';
+    persist();
+    renderReport();
+  });
+
+  const body = $app.querySelector('#report-body');
+  switch (STATE.reportTab) {
+    case 'synthesis': renderSynthesis(body, scores); break;
+    case 'bigFive':   renderBigFive(body, scores);   break;
+    case 'grit':      renderGrit(body, scores);      break;
+    case 'via':       renderVia(body, scores);       break;
+    case 'efficacy':  renderEfficacy(body, scores);  break;
+    case 'loc':       renderLoc(body, scores);       break;
+  }
+}
+
+function renderSynthesis(body, scores) {
+  const results = THEMES.map(t => ({ theme: t, ...themeScore(t, scores) }));
+
+  // Top 3 themes, bottom 3 themes (by score), for highlighting
+  const sorted = [...results].sort((a, b) => b.score - a.score);
+  const strongest = sorted.slice(0, 2);
+  const weakest = [...results].sort((a, b) => a.score - b.score).slice(0, 2);
+
+  // Theme cards
+  const cardsHtml = results.map(r => {
+    const interp = themeInterpretation(r.score);
+    const desc = STATE.persona === 'business' ? r.theme.businessDesc : r.theme.careerDesc;
+    const fillColor = interp.tone === 'high' ? 'var(--pos)' : (interp.tone === 'low' ? 'var(--warn)' : 'var(--accent)');
+    return `
+      <div class="theme-card">
+        <h4>
+          <span>${escapeHtml(r.theme.name)}</span>
+          <span class="score-band ${interp.tone}">${interp.tag}</span>
+        </h4>
+        <div class="theme-bar"><div style="width:${r.score}%;background:${fillColor}"></div></div>
+        <div class="theme-score">${r.score} / 100</div>
+        <p>${escapeHtml(desc)}</p>
+      </div>`;
+  }).join('');
+
+  body.innerHTML = '';
+  body.appendChild(el(`
+    <section class="card">
+      <h3>Your synthesized profile</h3>
+      <p class="lede">Six themes that matter for ${STATE.persona === 'business' ? 'building a business' : 'career growth'}, computed from across all five instruments.</p>
+      <div id="theme-radar" class="chart-box"></div>
+      <div class="theme-grid">${cardsHtml}</div>
+    </section>
+
+    <section class="card">
+      <h3>What to lean into</h3>
+      <p class="lede">${STATE.persona === 'business'
+        ? 'These are themes where your natural profile gives you an edge. Build the business around them.'
+        : 'These are themes where you\'re strongest. Lean into them when picking roles, projects, and pitches.'}</p>
+      ${strongest.map(r => leverageBlock(r, scores)).join('')}
+    </section>
+
+    <section class="card">
+      <h3>Where growth pays off most</h3>
+      <p class="lede">${STATE.persona === 'business'
+        ? 'These are themes where you\'re weakest — and they\'ll bottleneck the business if unaddressed. Either build the habit, or hire/partner for it.'
+        : 'These are themes where development would unlock the most career impact. Pick one to work on this quarter.'}</p>
+      ${weakest.map(r => growthBlock(r, scores)).join('')}
+    </section>
+  `));
+
+  // Radar chart
+  Plotly.newPlot('theme-radar', [{
+    type: 'scatterpolar',
+    r: results.map(r => r.score).concat([results[0].score]),
+    theta: results.map(r => r.theme.name).concat([results[0].theme.name]),
+    fill: 'toself',
+    line: { color: '#2563eb', width: 2 },
+    fillcolor: 'rgba(37,99,235,0.15)',
+    hovertemplate: '%{theta}: %{r}/100<extra></extra>',
+  }], {
+    polar: {
+      radialaxis: { visible: true, range: [0, 100], tickfont: { size: 10 } },
+      angularaxis: { tickfont: { size: 11 } },
+    },
+    margin: { t: 30, b: 30, l: 30, r: 30 },
+    showlegend: false,
+    paper_bgcolor: 'transparent',
+  }, { displayModeBar: false, responsive: true });
+}
+
+function leverageBlock(r, scores) {
+  // For each strongest theme, name top contributing strengths
+  const sorted = [...r.breakdown].sort((a, b) => b.pct - a.pct).slice(0, 2);
+  const contributorsHtml = sorted.map(b => {
+    const [inst, trait] = b.key.split('.');
+    const label = inst === 'via'
+      ? INSTRUMENTS.via.traitLabels[trait]
+      : INSTRUMENTS[inst].traitLabels[trait];
+    return `<span class="strength-pill">${escapeHtml(label)}</span>`;
+  }).join('');
+  return `
+    <div class="growth-card" style="border-left-color:var(--pos);background:#f3fbf6">
+      <div class="gc-title">${escapeHtml(r.theme.name)} — ${r.score}/100</div>
+      <div class="gc-how">Strongest contributors: ${contributorsHtml}</div>
+      <div class="gc-how" style="margin-top:8px">${escapeHtml(STATE.persona === 'business'
+        ? 'In your business: position yourself in this lane. Hire to complement, not to duplicate.'
+        : 'In your career: choose roles and projects that need this. Make it visible in your story.')}</div>
+    </div>`;
+}
+
+function growthBlock(r, scores) {
+  // Weakest contributor → growth action
+  const weakest = r.breakdown[0]; // already sorted ascending in themeScore
+  if (!weakest) return '';
+  const [inst, trait] = weakest.key.split('.');
+  const label = inst === 'via'
+    ? INSTRUMENTS.via.traitLabels[trait]
+    : INSTRUMENTS[inst].traitLabels[trait];
+
+  // Determine band for that input
+  let band = 'low';
+  if (inst !== 'via') {
+    const sc = scores[inst][trait];
+    if (sc?.band) band = sc.band;
+  } else {
+    // VIA: weakness from the synthesis perspective = low strength
+    band = 'low';
+  }
+
+  // Pull a growth action
+  let action = null;
+  if (inst === 'via') {
+    // For VIA contributors, recommend developing this strength deliberately
+    const amp = VIA_AMPLIFY[trait];
+    action = amp ? {
+      title: `Develop ${label}`,
+      why: 'This strength is a contributor to the theme but is lower in your profile. Deliberate practice raises it.',
+      how: amp.how,
+      source: 'Peterson & Seligman (2004); Niemiec (2018), Character Strengths Interventions.',
+    } : null;
+  } else {
+    const arr = GROWTH[trait]?.[band] || GROWTH[trait]?.low || [];
+    action = arr[0];
+  }
+
+  const actionHtml = action ? `
+    <div class="growth-card" style="margin-top:10px">
+      <div class="gc-title">${escapeHtml(action.title)}</div>
+      <div class="gc-why">${escapeHtml(action.why)}</div>
+      <div class="gc-how"><b>How:</b> ${escapeHtml(action.how)}</div>
+      <div class="gc-src">${escapeHtml(action.source)}</div>
+    </div>` : '';
+
+  return `
+    <div class="growth-card" style="border-left-color:var(--warn);background:#fffbeb">
+      <div class="gc-title">${escapeHtml(r.theme.name)} — ${r.score}/100</div>
+      <div class="gc-how">Weakest contributor: <span class="strength-pill" style="background:var(--warn-soft);color:var(--warn)">${escapeHtml(label)}</span></div>
+      ${actionHtml}
+    </div>`;
+}
+
+/* ----- Per-instrument report panes ----- */
+
+function renderBigFive(body, scores) {
+  const traits = ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism'];
+  body.innerHTML = '';
+  body.appendChild(el(`
+    <section class="card">
+      <h3>Big Five</h3>
+      <p class="lede">Five broad dimensions that organise most of human personality variation. Conscientiousness is the single strongest personality predictor of job performance across roles.</p>
+      <div id="bigfive-radar" class="chart-box"></div>
+      <div id="bigfive-scores"></div>
+    </section>
+    <section class="card">
+      <h3>Growth actions</h3>
+      <div id="bigfive-growth"></div>
+    </section>
+  `));
+
+  // Score rows
+  const rowsHtml = traits.map(t => {
+    const sc = scores.bigFive[t];
+    if (!sc) return '';
+    const band = sc.band || 'avg';
+    const pct = sc.pct ?? 50;
+    return `
+      <div class="score-row">
+        <div class="score-name">${escapeHtml(INSTRUMENTS.bigFive.traitLabels[t])}</div>
+        <div class="score-track"><div class="score-fill ${band}" style="width:${pct}%"></div></div>
+        <div class="score-band ${band}">${band === 'avg' ? 'Average' : (band === 'high' ? 'Higher' : 'Lower')}</div>
+      </div>`;
+  }).join('');
+  body.querySelector('#bigfive-scores').innerHTML = rowsHtml;
+
+  // Radar chart of Big Five
+  Plotly.newPlot('bigfive-radar', [{
+    type: 'scatterpolar',
+    r: traits.map(t => scores.bigFive[t]?.mean ?? 3).concat([scores.bigFive[traits[0]]?.mean ?? 3]),
+    theta: traits.map(t => INSTRUMENTS.bigFive.traitLabels[t]).concat([INSTRUMENTS.bigFive.traitLabels[traits[0]]]),
+    fill: 'toself',
+    line: { color: '#2563eb', width: 2 },
+    fillcolor: 'rgba(37,99,235,0.15)',
+    hovertemplate: '%{theta}: %{r:.2f} / 5<extra></extra>',
+  }], {
+    polar: { radialaxis: { visible: true, range: [1, 5], tickfont: { size: 10 } }, angularaxis: { tickfont: { size: 11 } } },
+    margin: { t: 30, b: 30, l: 30, r: 30 },
+    showlegend: false,
+    paper_bgcolor: 'transparent',
+  }, { displayModeBar: false, responsive: true });
+
+  // Growth actions per trait
+  const growthHtml = traits.map(t => {
+    const band = scores.bigFive[t]?.band || 'avg';
+    const arr = GROWTH[t]?.[band] || [];
+    if (arr.length === 0) return '';
+    return `
+      <div style="margin-bottom:14px">
+        <h4 style="margin:0 0 4px;font-size:14px">${escapeHtml(INSTRUMENTS.bigFive.traitLabels[t])} <span class="score-band ${band}" style="font-size:11px">${band === 'avg' ? 'Average' : (band === 'high' ? 'Higher' : 'Lower')}</span></h4>
+        ${arr.map(a => growthCardHtml(a)).join('')}
+      </div>`;
+  }).join('');
+  body.querySelector('#bigfive-growth').innerHTML = growthHtml || '<p class="small">No specific actions surfaced for your band profile — try the synthesis tab for cross-instrument recommendations.</p>';
+}
+
+function growthCardHtml(a) {
+  return `<div class="growth-card">
+    <div class="gc-title">${escapeHtml(a.title)}</div>
+    <div class="gc-why">${escapeHtml(a.why)}</div>
+    <div class="gc-how"><b>How:</b> ${escapeHtml(a.how)}</div>
+    <div class="gc-src">${escapeHtml(a.source)}</div>
+  </div>`;
+}
+
+function renderGrit(body, scores) {
+  const persev = scores.grit.perseverance;
+  const consist = scores.grit.consistency;
+  const overall = scores.grit.overall;
+  body.innerHTML = '';
+  body.appendChild(el(`
+    <section class="card">
+      <h3>Grit</h3>
+      <p class="lede">Perseverance plus consistency of interest toward a long-term goal. In Duckworth's research, grit predicts achievement above and beyond IQ.</p>
+      <div class="score-row">
+        <div class="score-name">Overall Grit</div>
+        <div class="score-track"><div class="score-fill" style="width:${((overall.mean - 1) / 4) * 100}%"></div></div>
+        <div class="score-band">${overall.mean} / 5</div>
+      </div>
+      <div class="score-row">
+        <div class="score-name">Perseverance of Effort</div>
+        <div class="score-track"><div class="score-fill ${persev.band}" style="width:${persev.pct}%"></div></div>
+        <div class="score-band ${persev.band}">${persev.band === 'avg' ? 'Average' : (persev.band === 'high' ? 'Higher' : 'Lower')}</div>
+      </div>
+      <div class="score-row">
+        <div class="score-name">Consistency of Interest</div>
+        <div class="score-track"><div class="score-fill ${consist.band}" style="width:${consist.pct}%"></div></div>
+        <div class="score-band ${consist.band}">${consist.band === 'avg' ? 'Average' : (consist.band === 'high' ? 'Higher' : 'Lower')}</div>
+      </div>
+      <p class="small" style="margin-top:14px"><b>Read this carefully:</b>
+        High perseverance with low consistency = you push hard but on shifting targets. High consistency with low perseverance = you commit but tire. The sweet spot is both — and rare.</p>
+    </section>
+    <section class="card">
+      <h3>Growth actions</h3>
+      <div>
+        <h4 style="margin:0 0 4px;font-size:14px">Perseverance of Effort <span class="score-band ${persev.band}" style="font-size:11px">${persev.band === 'avg' ? 'Average' : (persev.band === 'high' ? 'Higher' : 'Lower')}</span></h4>
+        ${(GROWTH.perseverance[persev.band] || []).map(a => growthCardHtml(a)).join('')}
+      </div>
+      <hr class="soft">
+      <div>
+        <h4 style="margin:0 0 4px;font-size:14px">Consistency of Interest <span class="score-band ${consist.band}" style="font-size:11px">${consist.band === 'avg' ? 'Average' : (consist.band === 'high' ? 'Higher' : 'Lower')}</span></h4>
+        ${(GROWTH.consistency[consist.band] || []).map(a => growthCardHtml(a)).join('') || '<p class="small">You\'re in a balanced band on consistency.</p>'}
+      </div>
+    </section>
+  `));
+}
+
+function renderVia(body, scores) {
+  const top5 = scores.via.top5;
+  const bottom5 = scores.via.bottom5;
+  const ranked = scores.via.ranked;
+  body.innerHTML = '';
+  body.appendChild(el(`
+    <section class="card">
+      <h3>Character Strengths — Top 5 Signature Strengths</h3>
+      <p class="lede">Peterson &amp; Seligman: applying signature strengths in new ways produces measurable gains in well-being and performance. Use these intentionally.</p>
+      <div style="margin:12px 0">${top5.map(s => `<span class="strength-pill">${escapeHtml(s.label)} — ${s.score}/5</span>`).join(' ')}</div>
+      ${top5.map(s => {
+        const amp = VIA_AMPLIFY[s.trait];
+        if (!amp) return '';
+        return `<div class="growth-card" style="border-left-color:var(--pos);background:#f3fbf6">
+          <div class="gc-title">${escapeHtml(s.label)}</div>
+          <div class="gc-how"><b>How to use it ${STATE.persona === 'business' ? 'in your business' : 'in your career'}:</b> ${escapeHtml(amp.how)}</div>
+        </div>`;
+      }).join('')}
+    </section>
+
+    <section class="card">
+      <h3>Lower strengths — context, not weakness</h3>
+      <p class="lede">Lowest-ranked strengths aren't flaws. The evidence-based move is to lean further into your top 5 rather than try to "fix" the bottom. Use the bottom 5 to know where to partner or delegate.</p>
+      <div>${bottom5.map(s => `<span class="strength-pill" style="background:#f1f5f9;color:#475569">${escapeHtml(s.label)} — ${s.score}/5</span>`).join(' ')}</div>
+    </section>
+
+    <section class="card">
+      <h3>All 24 strengths</h3>
+      <div id="via-bar" class="chart-box"></div>
+    </section>
+  `));
+
+  Plotly.newPlot('via-bar', [{
+    type: 'bar',
+    orientation: 'h',
+    x: ranked.slice().reverse().map(s => s.score),
+    y: ranked.slice().reverse().map(s => s.label),
+    marker: { color: ranked.slice().reverse().map((s, i) => i >= 19 ? '#16a34a' : '#94a3b8') },
+    hovertemplate: '%{y}: %{x}/5<extra></extra>',
+  }], {
+    margin: { t: 20, b: 30, l: 160, r: 20 },
+    xaxis: { range: [0, 5], dtick: 1 },
+    height: 600,
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+  }, { displayModeBar: false, responsive: true });
+}
+
+function renderEfficacy(body, scores) {
+  const sc = scores.efficacy.efficacy;
+  body.innerHTML = '';
+  body.appendChild(el(`
+    <section class="card">
+      <h3>General Self-Efficacy</h3>
+      <p class="lede">Your belief that you can handle novel, difficult demands. Self-efficacy predicts job performance, persistence under setback, and entrepreneurial intentions.</p>
+      <div class="score-row">
+        <div class="score-name">Self-Efficacy</div>
+        <div class="score-track"><div class="score-fill ${sc.band}" style="width:${sc.pct}%"></div></div>
+        <div class="score-band ${sc.band}">${sc.sum} / 40</div>
+      </div>
+      <p class="small">International norm (Scholz et al., 2002): mean ≈ 29.5, SD ≈ 5.3.</p>
+    </section>
+    <section class="card">
+      <h3>Growth actions</h3>
+      ${(GROWTH.efficacy[sc.band] || []).map(a => growthCardHtml(a)).join('')}
+    </section>
+  `));
+}
+
+function renderLoc(body, scores) {
+  const sc = scores.loc.internal;
+  body.innerHTML = '';
+  body.appendChild(el(`
+    <section class="card">
+      <h3>Locus of Control (Internal)</h3>
+      <p class="lede">Higher scores mean you tend to attribute outcomes to your own actions rather than luck or external forces. Internal locus of control is one of the most consistent psychological predictors of entrepreneurial success.</p>
+      <div class="score-row">
+        <div class="score-name">Internal LoC</div>
+        <div class="score-track"><div class="score-fill ${sc.band}" style="width:${sc.pct}%"></div></div>
+        <div class="score-band ${sc.band}">${sc.mean} / 5</div>
+      </div>
+    </section>
+    <section class="card">
+      <h3>Growth actions</h3>
+      ${(GROWTH.internal[sc.band] || []).map(a => growthCardHtml(a)).join('') || '<p class="small">You\'re in a balanced band — well-calibrated agency without over-internalising.</p>'}
+    </section>
+  `));
+}
+
+/* =====================================================================
+   INIT
+   ===================================================================== */
+
+restore();
+// On first render, if user had a complete assessment, default to report
+if (isComplete() && STATE.view === 'welcome') {
+  // leave on welcome but offer the report button there
+}
+
+function route() {
+  switch (STATE.view) {
+    case 'runner': renderRunner(); break;
+    case 'report': renderReport(); break;
+    default: renderWelcome();
+  }
+}
+route();
+</script>
+</body>
+</html>
